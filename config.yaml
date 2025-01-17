@@ -1,24 +1,38 @@
-# File: config.yaml
+# Updated config.yaml
 
-- headers:
-    user-agent: fetch-synthetic-monitor
+- name: Fetch homepage
+  url: https://example.com/
   method: GET
-  name: fetch index page
-  url: https://fetch.com/
+  headers:
+    user-agent: fetch-monitor
 
-- headers:
-    user-agent: fetch-synthetic-monitor
+- name: Fetch careers
+  url: https://example.com/careers
   method: GET
-  name: fetch careers page
-  url: https://fetch.com/careers
 
-- body: '{"foo":"bar"}'
+- name: Fetch API health
+  url: https://jsonplaceholder.typicode.com/posts/1
+  method: GET
+  headers:
+    user-agent: fetch-monitor
+
+- name: Fetch rewards page
+  url: https://jsonplaceholder.typicode.com/users/1
+  method: GET
+  headers:
+    user-agent: fetch-monitor
+
+- name: Example JSON Placeholder GET
+  url: https://jsonplaceholder.typicode.com/posts/2
+  method: GET
+
+- name: Example JSON Placeholder POST
+  url: https://jsonplaceholder.typicode.com/posts
+  method: POST
   headers:
     content-type: application/json
-    user-agent: fetch-synthetic-monitor
-  method: POST
-  name: fetch some fake post endpoint
-  url: https://fetch.com/some/post/endpoint
+    user-agent: fetch-monitor
+  body: '{"title": "foo", "body": "bar", "userId": 1}'
 
-- name: fetch rewards index page
-  url: https://www.fetchrewards.com/
+- name: Example with only URL
+  url: https://example.com
