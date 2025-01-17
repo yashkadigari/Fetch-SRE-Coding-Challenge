@@ -1,103 +1,108 @@
 # HTTP Endpoint Health Monitor
 
-This Python script monitors the health of HTTP endpoints specified in a YAML configuration file. The script periodically checks the availability of the endpoints and logs their uptime percentage.
+## Overview
+This Python program monitors the health of HTTP endpoints specified in a YAML configuration file. It periodically checks the endpoints' availability and logs the results to the console, including the availability percentage of each domain over the program's runtime.
 
 ## Features
-- Monitors HTTP/HTTPS endpoints using custom configuration.
-- Logs availability percentage for each endpoint's domain.
-- Supports retries for failed requests with configurable retry counts.
-- Handles GET, POST, and other HTTP methods.
+- Supports `GET`, `POST`, and other HTTP methods.
+- Logs the availability percentage of domains to the console after each test cycle.
+- Retries failed requests up to 3 times by default.
+- Runs continuously, checking endpoints every 15 seconds, until manually stopped.
 
-## Prerequisites
-- Python 3.8 or later
-- `pip` (Python package installer)
-- YAML configuration file specifying endpoints
+## Requirements
+- Python 3.6 or higher
+- Internet access to perform health checks
+- The `requests` and `PyYAML` Python libraries
 
 ## Installation
-1. Clone this repository or download the script directly.
+1. Clone this repository or download the script (`monitor.py`).
+2. Ensure Python is installed on your system. To check:
    ```bash
-   git clone <repository_url>
-   cd <repository_folder>
+   python3 --version
    ```
-
-2. Install required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   Alternatively, install the dependencies manually:
+3. Install the required libraries:
    ```bash
    pip install requests pyyaml
    ```
 
 ## Usage
-Run the script using the following syntax:
-
+Run the script using the following command:
 ```bash
-python3 monitor.py <path_to_yaml_config> [<retry_count>]
+python3 monitor.py <path_to_yaml_config>
 ```
 
-### Arguments
-- `<path_to_yaml_config>`: Path to the YAML configuration file specifying the endpoints to monitor.
-- `[<retry_count>]`: (Optional) Number of retries for failed requests. Must be a positive integer. Default is 3.
-
-### Example
-To monitor endpoints defined in `config.yaml` with a retry count of 5:
+### Example:
 ```bash
-python3 monitor.py config.yaml 5
+python3 monitor.py config.yaml
 ```
 
-### Example YAML Configuration File
+### Input File Format
+The configuration file must be a YAML file with a list of endpoints. Each endpoint entry should follow this schema:
+- **`name`** (string, required): A descriptive name for the endpoint.
+- **`url`** (string, required): The endpoint's URL.
+- **`method`** (string, optional): HTTP method (`GET`, `POST`, etc.). Defaults to `GET`.
+- **`headers`** (dictionary, optional): HTTP headers to include in the request.
+- **`body`** (string, optional): HTTP body for the request (valid JSON string).
+
+#### Sample Configuration (`config.yaml`):
 ```yaml
-- name: Example Index Page
-  url: https://example.com
+- name: Fetch homepage
+  url: https://fetch.com/
   method: GET
   headers:
-    user-agent: custom-monitor
+    user-agent: fetch-monitor
 
-- name: Example API Endpoint
-  url: https://api.example.com/health
+- name: Fetch careers
+  url: https://fetch.com/careers
+  method: GET
+
+- name: Fetch API health
+  url: https://api.fetch.com/health
   method: POST
   headers:
     content-type: application/json
-  body: '{"key": "value"}'
+    user-agent: fetch-monitor
+  body: '{"check": "health"}'
 ```
 
-### Default Configuration
-If no configuration file is provided, the script uses a built-in default configuration:
-- Monitors `https://example.com`, `https://api.example.com/health`, and other sample endpoints.
-
-## Logs and Output
-- The script prints availability percentages for each domain to the console after every monitoring cycle.
-- Logs include detailed error messages for failed requests and retries.
+## Output
+After each cycle (15 seconds), the program logs availability percentages for each domain:
+```plaintext
+fetch.com has 75% availability percentage
+api.fetch.com has 100% availability percentage
+```
 
 ## Error Handling
-- Provides detailed messages for missing or malformed configuration files.
-- Validates YAML configuration schema and HTTP method correctness.
-- Handles common network errors gracefully.
+1. **File Not Found:**
+   If the provided YAML file is not found, the program exits with an error:
+   ```plaintext
+   Error: File 'config.yaml' not found.
+   ```
 
-## Cross-Platform Usage
-The script is platform-independent and should work on Windows, macOS, and Linux. Ensure Python 3.8+ is installed on your system.
+2. **YAML Parsing Error:**
+   If the YAML file is malformed, the program exits with an error:
+   ```plaintext
+   Error: Failed to parse YAML file. <details>
+   ```
 
-### Installing Python
-1. [Download Python](https://www.python.org/downloads/).
-2. Follow the instructions for your operating system.
+3. **Invalid Command:**
+   If no file is provided, the program exits with usage instructions:
+   ```plaintext
+   Usage: python3 monitor.py <path_to_yaml_config>
+   Example: python3 monitor.py config.yaml
+   ```
 
-### Verifying Python Installation
-Run the following command to check the installed Python version:
-```bash
-python3 --version
+## Limitations
+- The program assumes the YAML file is valid and does not validate its schema beyond basic file parsing.
+- Requests are retried up to 3 times with a fixed 1-second delay between retries.
+
+## Stopping the Program
+To stop the program, press `CTRL+C`. The program will log a termination message and exit gracefully:
+```plaintext
+Monitoring stopped. Exiting program.
 ```
 
-## Testing the Script
-You can test the script using the provided example configuration file or create your own.
-
-### Testing Invalid Inputs
-- Run without arguments to see usage instructions:
-  ```bash
-  python3 monitor.py
-  ```
-- Pass an invalid retry count to test validation:
-  ```bash
-  python3 monitor.py config.yaml 0
-  ```
+## Notes for Reviewers
+- The program is designed to run on any OS with Python installed.
+- It does not persist data to disk; all state is maintained in memory.
+- You can use the provided `config.yaml` sample or create your own configuration file for testing.
