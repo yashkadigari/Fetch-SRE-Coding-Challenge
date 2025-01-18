@@ -36,7 +36,7 @@ python3 monitor.py <path_to_yaml_config>
 python3 monitor.py config.yaml
 ```
 
-### Input File Format
+## Input File Format
 The configuration file must be a YAML file with a list of endpoints. Each endpoint entry should follow this schema:
 - **`name`** (string, required): A descriptive name for the endpoint.
 - **`url`** (string, required): The endpoint's URL.
@@ -44,32 +44,42 @@ The configuration file must be a YAML file with a list of endpoints. Each endpoi
 - **`headers`** (dictionary, optional): HTTP headers to include in the request.
 - **`body`** (string, optional): HTTP body for the request (valid JSON string).
 
-#### Sample Configuration (`config.yaml`):
+#### Updated Sample Configuration (`config.yaml`):
 ```yaml
 - name: Fetch homepage
-  url: https://fetch.com/
+  url: https://example.com/
   method: GET
   headers:
     user-agent: fetch-monitor
 
-- name: Fetch careers
-  url: https://fetch.com/careers
-  method: GET
-
 - name: Fetch API health
-  url: https://api.fetch.com/health
+  url: https://jsonplaceholder.typicode.com/posts/1
+  method: GET
+  headers:
+    user-agent: fetch-monitor
+
+- name: Fetch rewards page
+  url: https://jsonplaceholder.typicode.com/users/1
+  method: GET
+  headers:
+    user-agent: fetch-monitor
+
+- name: Example JSON Placeholder POST
+  url: https://jsonplaceholder.typicode.com/posts
   method: POST
   headers:
     content-type: application/json
     user-agent: fetch-monitor
-  body: '{"check": "health"}'
+  body: '{"title": "foo", "body": "bar", "userId": 1}'
 ```
 
-## Output
+---
+
+### Output
 After each cycle (15 seconds), the program logs availability percentages for each domain:
 ```plaintext
-fetch.com has 75% availability percentage
-api.fetch.com has 100% availability percentage
+example.com has 100% availability percentage
+jsonplaceholder.typicode.com has 100% availability percentage
 ```
 
 ## Error Handling
@@ -92,17 +102,15 @@ api.fetch.com has 100% availability percentage
    Example: python3 monitor.py config.yaml
    ```
 
-## Limitations
-- The program assumes the YAML file is valid and does not validate its schema beyond basic file parsing.
-- Requests are retried up to 3 times with a fixed 1-second delay between retries.
+---
+
+### Notes for Testing
+- All endpoints in the provided `config.yaml` are publicly accessible.
+- `jsonplaceholder.typicode.com` is a public API used for testing.
+- `example.com` is a reliable placeholder domain for basic testing.
 
 ## Stopping the Program
 To stop the program, press `CTRL+C`. The program will log a termination message and exit gracefully:
 ```plaintext
 Monitoring stopped. Exiting program.
 ```
-
-## Notes for Reviewers
-- The program is designed to run on any OS with Python installed.
-- It does not persist data to disk; all state is maintained in memory.
-- You can use the provided `config.yaml` sample or create your own configuration file for testing.
